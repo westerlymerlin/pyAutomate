@@ -42,7 +42,7 @@ jobs:
           echo "DocuCode Updates found"
           git commit --message "DocUCode automated documentation from code"
         }
-        git push --set-upstream origin DocUCode
+        git push --force --set-upstream origin DocUCode
       env:
         GH_TOKEN: ${{ secrets.ACTIONSECRET }}
     - name: Create PR Release to main
