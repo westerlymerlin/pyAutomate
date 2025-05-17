@@ -46,7 +46,8 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.ACTIONSECRET }}
     - name: Create PR Release to main
-      run: gh pr create --title "Auto PR from github action" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
+      run: |
+        gh pr create --title "Auto PR from WesterlyMerlin Python Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
       env:
         GH_TOKEN: ${{ secrets.ACTIONSECRET }}
 
