@@ -1,0 +1,51 @@
+name: Code checks, DocuCode and create a pr to merge to the master branch - for Windows runner with powershell
+run-name: WesterlyMerlin Python Checks
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+      env:
+        GH_TOKEN: ${{ secrets.ACTIONSECRET }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+        pip install -r requirements.txt
+        python -m pip install pydoc_markdown
+    - name: Analyse the code with pylint (pass score = 9/10)
+      run: |
+        pylint $(git ls-files '*.py')
+    - name: Download and run documentation as code
+      run: |
+        curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
+        python -m document_from_code
+    - name: Commit changes to the DocUCode branch
+      run: |
+        git config user.email "DocUCode@westerlymerlin.internal"
+        git config user.name "DocUCode"
+        git switch -c DocUCode
+        git add ./docs/*.md
+        if (git diff --name-only --cached | Select-String -Pattern 'docs' -AllMatches)
+        {
+          echo "DocuCode Updates found"
+          git commit --message "DocUCode automated documentation from code"
+        }
+        git push --set-upstream origin DocUCode
+    - name: Create PR Release to main
+      run: gh pr create --title "Auto PR from github action" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
+
+

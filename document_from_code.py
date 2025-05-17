@@ -8,11 +8,11 @@ import os
 from pydoc_markdown.interfaces import Context
 from pydoc_markdown.contrib.loaders.python import PythonLoader
 from pydoc_markdown.contrib.renderers.markdown import MarkdownRenderer
-from app_control import settings, VERSION
+
 
 DOCSPATH = './docs'
 SEARCHPATHS = ['../', '../ui/']
-SKIPNAMES = ['ui_layout_', 'main_rc', 'RPi', 'test', 'venv']
+SKIPNAMES = ['ui_layout_', 'main_rc', 'RPi', 'test', 'venv', 'document_from_code']
 
 def checkmodule(name):
     """Check if a module is valid for documentation"""
@@ -25,13 +25,7 @@ def checkmodule(name):
 
 def create_docs():
     """Create the documents for the project"""
-    print('docs path = %s' % DOCSPATH)
-    print('search paths = %s' % SEARCHPATHS)
-    print('files in current directory')
-    files = os.listdir(os.curdir)
-    for item in files:
-        print(item)
-    print('Creating documentation')
+    print('docs path = %s\nsearch paths = %s\nCreating documentation ' % (DOCSPATH, SEARCHPATHS))
     if not os.path.exists(DOCSPATH):
         os.makedirs(DOCSPATH)
     context = Context(directory=DOCSPATH)
@@ -54,11 +48,10 @@ def create_docs():
             renderer.process([module], None)
             renderer.render([module])
     linedata.sort()
-    print("Generating readme.md file in docs folder")
+    print("\nGenerating readme.md file in docs folder")
     with open( DOCSPATH + '/readme.md', 'w', encoding='utf8') as outfile:
         print('# Module Documentation\n\n', file=outfile)
-        print('This document contains the documentation for all the modules in the **%s** version %s application.\n\n---\n'
-              %(settings['app-name'], VERSION), file=outfile)
+        print('This document contains the documentation for all the modules in this project.\n\n---\n', file=outfile)
         print('## Contents\n\n', file=outfile)
         for item in linedata:
             module = item[0][0]
@@ -71,7 +64,7 @@ def create_docs():
             print(line_item, file=outfile)
         print('\n---\n', file=outfile)
     outfile.close()
-    print('files in current directory')
+    print('\n\n*** files in Docs path ***\n')
     files = os.listdir(DOCSPATH)
     for item in files:
         print(item)
