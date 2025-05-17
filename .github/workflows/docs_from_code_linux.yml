@@ -4,8 +4,8 @@ run-name: WesterlyMerlin Python Checks
 on:
   workflow_call:
     secrets:
-      GHTOKEN:
-        required: True
+      GH_ACTION_SECRET:
+        required: true
 
 jobs:
   build:
@@ -47,11 +47,11 @@ jobs:
         fi
         git push --force --set-upstream origin DocUCode
       env:
-        GH_TOKEN: ${{ secrets.GHTOKEN }}
+        GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
     - name: Create PR Release to main
       run: |
         gh pr create --title "Auto PR from WesterlyMerlin Python Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
       env:
-        GH_TOKEN: ${{ secrets.GHTOKEN }}
+        GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
 
