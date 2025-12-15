@@ -35,6 +35,15 @@ jobs:
       run: |
         curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
         python -m document_from_code
+    - name: Run terraform-docs
+      uses: terraform-docs/gh-actions@v1.4.1
+      with:
+        working-dir: .
+        find-dir: ./terraform
+        output-file: ./docs/terraform.md
+        output-method: replace
+      env:
+        GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
     - name: Commit changes to the DocUCode branch
       run: |
         git config user.email "DocUCode@westerlymerlin.internal"
