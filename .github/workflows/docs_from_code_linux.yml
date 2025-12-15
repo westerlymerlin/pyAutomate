@@ -38,7 +38,7 @@ jobs:
     - name: Run terraform-docs
       uses: terraform-docs/gh-actions@v1.4.1
       with:
-        working-dir: ./terraform
+        working-dir: .
         output-file: ../docs/terraform.md
         output-method: replace
     - name: Commit changes to the DocUCode branch
