@@ -34,13 +34,16 @@ jobs:
     - name: Download and run python documentation as code
       run: |
         curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
+        echo "checking local directory"
+        pwd
+        ls -l
         python -m document_from_code
     - name: Run terraform-docs
       uses: terraform-docs/gh-actions@v1.4.1
       with:
-        working-dir: .
+        working-dir: ./
         find-dir: ./terraform
-        output-file: /docs/terraform.md
+        output-file: ./docs/terraform.md
         output-method: replace
       env:
         GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
