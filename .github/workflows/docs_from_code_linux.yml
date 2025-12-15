@@ -43,7 +43,7 @@ jobs:
       with:
         working-dir: ./
         find-dir: ./terraform
-        output-file: ~/docs/terraform.md
+        output-file: /docs/terraform.md
         output-method: replace
       env:
         GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
