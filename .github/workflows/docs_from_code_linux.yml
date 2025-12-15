@@ -31,10 +31,16 @@ jobs:
     - name: Analyse the code with pylint (pass score = 9/10)
       run: |
         pylint $(git ls-files '*.py')
-    - name: Download and run documentation as code
+    - name: Download and run python documentation as code
       run: |
         curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
         python -m document_from_code
+    - name: Run terraform-docs
+      uses: terraform-docs/gh-actions@v1.4.1
+      with:
+        working-dir: ./terraform
+        output-file: ./docs/terraform.md
+        output-method: replace
     - name: Commit changes to the DocUCode branch
       run: |
         git config user.email "DocUCode@westerlymerlin.internal"
