@@ -27,10 +27,13 @@ jobs:
         uv pip install --system --upgrade pip
         uv pip install --system pylint
         uv pip install --system pydoc_markdown
-        if [ -f requirements.txt ]; then uv pip install -r requirements.txt; fi
     - name: Analyse the code with pylint (pass score = 9/10)
       run: |
-        pylint $(git ls-files '*.py')
+        if [ -f requirements.txt ];
+        then 
+          uv pip install -r requirements.txt
+          pylint $(git ls-files '*.py')
+        fi
     - name: Download and run python documentation as code
       run: |
         curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
