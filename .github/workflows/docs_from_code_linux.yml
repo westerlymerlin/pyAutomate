@@ -43,11 +43,11 @@ jobs:
       with:
         working-dir: ./
         find-dir: ./terraform
+        recursive: true
         output-file: ../docs/terraform.md
         output-method: replace
       env:
         GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
-
     - name: Commit changes to the DocUCode branch
       run: |
         git config user.email "DocUCode@westerlymerlin.internal"
