@@ -36,11 +36,14 @@ jobs:
         fi
     - name: Download and run python documentation as code
       run: |
-        curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
-        echo "checking local directory"
-        pwd
-        ls -l
-        python -m document_from_code
+        if [ -f requirements.txt ];
+        then 
+          curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
+          echo "checking local directory"
+          pwd
+          ls -l
+          python -m document_from_code
+        fi
     - name: Run terraform-docs
       uses: terraform-docs/gh-actions@v1.4.1
       with:
@@ -55,7 +58,7 @@ jobs:
         git config user.email "DocUCode@westerlymerlin.internal"
         git config user.name "DocUCode"
         git switch -c DocUCode
-        git add ./docs/*.md
+        git add '*.md'
         if git diff --cached --name-only | grep --quiet md
         then
           echo "DocuCode Updates found"
