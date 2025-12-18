@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.12"]
     steps:
     - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
@@ -55,6 +55,7 @@ jobs:
         git config user.name "DocUCode"
         git switch -c DocUCode
         whoami
+        ls -la .git
         echo "Adding md files to the DocUCode branch"
         git add '*.md'
         echo "Checking for changes to commit"
