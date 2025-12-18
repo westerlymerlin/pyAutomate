@@ -1,5 +1,5 @@
 name: Code checks, DocuCode and create a pr to merge to the master branch - for Linux runner with bash
-run-name: WesterlyMerlin Python Checks
+run-name: WesterlyMerlin Code Checks
 
 on:
   workflow_call:
@@ -27,7 +27,7 @@ jobs:
         groups
         if [ -f requirements.txt ];
         then
-          echo "Python found !"
+          echo "Python found"
           pip install uv
           uv pip install --system --upgrade pip
           uv pip install --system pylint
@@ -37,6 +37,8 @@ jobs:
           curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
           echo "checking local directory"
           python -m document_from_code
+        else
+          echo "No Python found"
         fi
     - name: Run terraform-docs
       uses: terraform-docs/gh-actions@v1.4.1
@@ -52,7 +54,10 @@ jobs:
         git config user.email "DocUCode@westerlymerlin.internal"
         git config user.name "DocUCode"
         git switch -c DocUCode
+        whoami
+        echo "Adding md files to the DocUCode branch"
         git add '*.md'
+        echo "Checking for changes to commit"
         if git diff --cached --name-only | grep --quiet md
         then
           echo "DocuCode Updates found"
@@ -61,7 +66,7 @@ jobs:
         git push --force --set-upstream origin DocUCode
       env:
         GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
-    - name: Create PR Release to main
+    - name: Create PR Release to main for checked in code
       run: |
         gh pr create --title "Auto PR from WesterlyMerlin Code Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
       env:
