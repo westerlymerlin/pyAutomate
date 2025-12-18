@@ -55,6 +55,7 @@ jobs:
         git config user.name "DocUCode"
         git switch -c DocUCode
         whoami
+        sudo chown -R $(whoami):$(whoami) .git && sudo chmod -R ug+rwx,o+rx .git
         ls -la .git
         echo "Adding md files to the DocUCode branch"
         git add '*.md'
