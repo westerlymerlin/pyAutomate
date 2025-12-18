@@ -17,11 +17,16 @@ jobs:
         python-version: ["3.12"]
     steps:
     - uses: actions/checkout@v6
+    - run:
+        export pyfiles = $(git ls-files '*.py')
+        export tffiles = $(git ls-files '*.tf')
+        echo $pyfiles
+        echo $tffiles
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: If contains Python, pylint and download and run python documentation as code
+    - name: If contains Python, run pylint and download and run python documentation as code
       run: |
         whoami
         groups
@@ -40,7 +45,7 @@ jobs:
         else
           echo "No Python found"
         fi
-    - name: Run terraform-docs
+    - name: If contains Terraform, tflint and run terraform documentation as code
       uses: terraform-docs/gh-actions@v1.4.1
       with:
         working-dir: ./
@@ -54,9 +59,7 @@ jobs:
         git config user.email "DocUCode@westerlymerlin.internal"
         git config user.name "DocUCode"
         git switch -c DocUCode
-        whoami
         sudo chown -R $(whoami):$(whoami) .git && sudo chmod -R ug+rwx,o+rx .git
-        ls -la .git
         echo "Adding md files to the DocUCode branch"
         git add '*.md'
         echo "Checking for changes to commit"
