@@ -16,32 +16,26 @@ jobs:
       matrix:
         python-version: ["3.11"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install python dependencies
+    - name: If contains Python, pylint and download and run python documentation as code
       run: |
-        pip install uv
-        uv pip install --system --upgrade pip
-        uv pip install --system pylint
-        uv pip install --system pydoc_markdown
-    - name: Analyse the code with pylint (pass score = 9/10)
-      run: |
+        whoami
+        groups
         if [ -f requirements.txt ];
-        then 
+        then
+          echo "Python found !"
+          pip install uv
+          uv pip install --system --upgrade pip
+          uv pip install --system pylint
+          uv pip install --system pydoc_markdown
           uv pip install -r requirements.txt
-          pylint $(git ls-files '*.py')
-        fi
-    - name: Download and run python documentation as code
-      run: |
-        if [ -f requirements.txt ];
-        then 
+          pylint $(git ls-files '*.py') 
           curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
           echo "checking local directory"
-          pwd
-          ls -l
           python -m document_from_code
         fi
     - name: Run terraform-docs
@@ -69,7 +63,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
     - name: Create PR Release to main
       run: |
-        gh pr create --title "Auto PR from WesterlyMerlin Python Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
+        gh pr create --title "Auto PR from WesterlyMerlin Code Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
       env:
         GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
