@@ -31,8 +31,6 @@ jobs:
           echo $pyfiles
           echo "tffiles="
           echo $tffiles
-          echo "pyfiles=$pyfiles" >> $GITHUB_OUTPUT
-          echo "tffiles=$tffiles"  >> $GITHUB_OUTPUT
 
       - name: Set up Python ${{ matrix.python-version }}
         if: steps.file_types.output.pyfiles == 'true'
