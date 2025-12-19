@@ -22,8 +22,8 @@ jobs:
       - name: Check for existence of Python and Terraform files
         run: |
           echo "Checking for Python and Terraform files"
-          pyfiles=$(git ls-files '*.py')
-          tffiles=$(git ls-files '*.tf')
+          export pyfiles=$(git ls-files '*.py')
+          export tffiles=$(git ls-files '*.tf')
           echo "pyfiles=$pyfiles" >> $GITHUB_ENV
           echo "tffiles=$tffiles" >> $GITHUB_ENV
 
