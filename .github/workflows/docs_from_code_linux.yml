@@ -15,6 +15,8 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
+        pyfiles: ["false"]
+        tffiles: ["false"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -23,15 +25,14 @@ jobs:
         id: file_types
         run: |
           echo "Checking for Python and Terraform files"
-          if [ "$(git ls-files '*.py')" == "" ]; then export pyfiles=false; else export pyfiles=true; fi
-          if [ "$(git ls-files '*.tf')" == "" ]; then export tffiles=false; else export tffiles=true; fi
+          if [ "$(git ls-files '*.py')" == "" ]; then pyfiles=false; else pyfiles=true; fi
+          if [ "$(git ls-files '*.tf')" == "" ]; then tffiles=false; else tffiles=true; fi
           echo "pyfiles="
           echo $pyfiles
           echo "tffiles="
           echo $tffiles
           echo "pyfiles=$pyfiles" >> $GITHUB_OUTPUT
           echo "tffiles=$tffiles"  >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
 
       - name: Set up Python ${{ matrix.python-version }}
         if: steps.file_types.output.pyfiles == 'true'
