@@ -15,28 +15,31 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-
       - name: Check for existence of Python and Terraform files
+        id: doc_types
         run: |
           echo "Checking for Python and Terraform files"
           if [ "$(git ls-files '*.py')" == "" ]; then pyfiles=false; else pyfiles=true; fi
           if [ "$(git ls-files '*.tf')" == "" ]; then tffiles=false; else tffiles=true; fi
           echo "pyfiles="
-          echo $pyfiles
+          echo $pyfiles 
           echo "tffiles="
           echo $tffiles
+          echo "py_files=$pyfiles" >> $GITHUB_OUTPUT
+          echo "tf_files=$tffiles" >> $GITHUB_OUTPUT
 
       - name: Set up Python ${{ matrix.python-version }}
-        if: steps.pyfiles == 'true'
+        if: steps.doc_types.outputs.py_files == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: If Python fund, run pylint and download and run python documentation as code
-        if: steps.pyfiles == 'true'
+        if: steps.doc_types.outputs.py_files == 'true'
         run: |
           echo "Python found"
           pip install uv
@@ -50,7 +53,7 @@ jobs:
           python -m document_from_code
 
       - name: If contains Terraform, tflint and run terraform documentation as code
-        if: steps.tffiles == 'true'
+        if: steps.doc_types.outputs.tf_files == 'true'
         uses: terraform-docs/gh-actions@v1.4.1
         with:
           working-dir: ./
