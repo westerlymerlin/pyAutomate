@@ -16,22 +16,24 @@ jobs:
       matrix:
         python-version: ["3.12"]
     steps:
-    - uses: actions/checkout@v6
-    - run: |
-        export pyfiles = $(git ls-files '*.py')
-        export tffiles = $(git ls-files '*.tf')
-        echo $pyfiles
-        echo $tffiles
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: If contains Python, run pylint and download and run python documentation as code
-      run: |
-        whoami
-        groups
-        if [ -f requirements.txt ];
-        then
+      - name: Checkout repository
+      - uses: actions/checkout@v6
+        run: |
+          echo "Checking for Python and Terraform files"
+          pyfiles=$(git ls-files '*.py')
+          tffiles=$(git ls-files '*.tf')
+          echo "pyfiles=$pyfiles" >> $GITHUB_ENV
+          echo "tffiles=$tffiles" >> $GITHUB_ENV
+
+      - name: Set up Python ${{ matrix.python-version }}
+        if: env.pyfiles != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: If Python fund, run pylint and download and run python documentation as code
+        if: env.pyfiles != ''
+        run: |
           echo "Python found"
           pip install uv
           uv pip install --system --upgrade pip
@@ -42,39 +44,40 @@ jobs:
           curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
           echo "checking local directory"
           python -m document_from_code
-        else
-          echo "No Python found"
-        fi
-    - name: If contains Terraform, tflint and run terraform documentation as code
-      uses: terraform-docs/gh-actions@v1.4.1
-      with:
-        working-dir: ./
-        find-dir: ./terraform
-        output-file: README.md
-        output-method: replace
-      env:
-        GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
-    - name: Commit changes to the DocUCode branch
-      run: |
-        git config user.email "DocUCode@westerlymerlin.internal"
-        git config user.name "DocUCode"
-        git switch -c DocUCode
-        sudo chown -R $(whoami):$(whoami) .git && sudo chmod -R ug+rwx,o+rx .git
-        echo "Adding md files to the DocUCode branch"
-        git add '*.md'
-        echo "Checking for changes to commit"
-        if git diff --cached --name-only | grep --quiet md
-        then
-          echo "DocuCode Updates found"
-          git commit --message "DocUCode automated documentation from code"
-        fi
-        git push --force --set-upstream origin DocUCode
-      env:
-        GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
-    - name: Create PR Release to main for checked in code
-      run: |
-        gh pr create --title "Auto PR from WesterlyMerlin Code Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
-      env:
-        GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
+
+      - name: If contains Terraform, tflint and run terraform documentation as code
+        if: env.tffiles != ''
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          working-dir: ./
+          find-dir: ./terraform
+          output-file: README.md
+          output-method: replace
+        run: |
+          echo "Terraform Found"
+
+      - name: Commit changes to the DocUCode branch
+        run: |
+          git config user.email "DocUCode@westerlymerlin.internal"
+          git config user.name "DocUCode"
+          git switch -c DocUCode
+          sudo chown -R $(whoami):$(whoami) .git && sudo chmod -R ug+rwx,o+rx .git
+          echo "Adding md files to the DocUCode branch"
+          git add '*.md'
+          echo "Checking for changes to commit"
+          if git diff --cached --name-only | grep --quiet md
+          then
+            echo "DocuCode Updates found"
+            git commit --message "DocUCode automated documentation from code"
+          fi
+          git push --force --set-upstream origin DocUCode
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
+
+      - name: Create PR Release to main for checked in code
+        run: |
+          gh pr create --title "Auto PR from WesterlyMerlin Code Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
 
