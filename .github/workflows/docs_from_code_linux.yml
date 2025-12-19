@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Check for existence of Python and Terraform files
         run: |
           echo "Checking for Python and Terraform files"
           pyfiles=$(git ls-files '*.py')
