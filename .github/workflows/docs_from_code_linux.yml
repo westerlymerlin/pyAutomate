@@ -15,8 +15,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
-        pyfiles: ["false"]
-        tffiles: ["false"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -53,7 +51,7 @@ jobs:
           python -m document_from_code
 
       - name: If contains Terraform, tflint and run terraform documentation as code
-        if: steps.file_types.tffiles == 'true'
+        if: file_types.tffiles == 'true'
         uses: terraform-docs/gh-actions@v1.4.1
         with:
           working-dir: ./
