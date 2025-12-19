@@ -24,8 +24,8 @@ jobs:
           echo "Checking for Python and Terraform files"
           export pyfiles=$(git ls-files '*.py')
           export tffiles=$(git ls-files '*.tf')
-          echo "pyfiles=$pyfiles" >> $GITHUB_ENV
-          echo "tffiles=$tffiles" >> $GITHUB_ENV
+          echo "pyfiles=$pyfiles" 
+          echo "tffiles=$tffiles" 
 
       - name: Set up Python ${{ matrix.python-version }}
         if: env.pyfiles != ''
