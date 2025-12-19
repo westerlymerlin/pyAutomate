@@ -53,8 +53,6 @@ jobs:
           find-dir: ./terraform
           output-file: README.md
           output-method: replace
-        run: |
-          echo "Terraform Found"
 
       - name: Commit changes to the DocUCode branch
         run: |
