@@ -38,18 +38,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: If Python fund, run pylint and download and run python documentation as code
+      - name: If Python found, run pylint and download and run python documentation as code
         if: steps.doc_types.outputs.py_files == 'true'
         run: |
-          echo "Python found"
+          echo "Python found installing pylint and pydoc_markdown"
           pip install uv
           uv pip install --system --upgrade pip
           uv pip install --system pylint
           uv pip install --system pydoc_markdown
-          uv pip install -r requirements.txt
+          echo "Installing requirements.txt"
+          uv pip install --system -r requirements.txt
+          echo "Running pylint"
           pylint $(git ls-files '*.py') 
+          echo "Downloading document_from_code.py"
           curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
-          echo "checking local directory"
+          echo "Running Document From Code"
           python -m document_from_code
 
       - name: If contains Terraform, tflint and run terraform documentation as code
