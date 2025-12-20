@@ -1,4 +1,4 @@
-name: Code checks, DocuCode and create a pr to merge to the master branch - for Linux runner with bash
+name: Code checks, DocuCode and create a Pull Request to merge to the main branch - Linux runner with bash
 run-name: WesterlyMerlin Code Checks
 
 on:
@@ -25,20 +25,16 @@ jobs:
           echo "Checking for Python and Terraform files"
           if [ "$(git ls-files '*.py')" == "" ]; then pyfiles=false; else pyfiles=true; fi
           if [ "$(git ls-files '*.tf')" == "" ]; then tffiles=false; else tffiles=true; fi
-          echo "pyfiles="
-          echo $pyfiles 
-          echo "tffiles="
-          echo $tffiles
           echo "py_files=$pyfiles" >> $GITHUB_OUTPUT
           echo "tf_files=$tffiles" >> $GITHUB_OUTPUT
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: If python found set up python on runner ${{ matrix.python-version }}
         if: steps.doc_types.outputs.py_files == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: If Python found, run pylint and download and run python documentation as code
+      - name: If python found, run pylint
         if: steps.doc_types.outputs.py_files == 'true'
         run: |
           echo "Python found installing pylint and pydoc_markdown"
@@ -50,12 +46,16 @@ jobs:
           uv pip install --system -r requirements.txt
           echo "Running pylint"
           pylint $(git ls-files '*.py') 
+
+      - name: If python found, run python documentation from code
+        if: steps.doc_types.outputs.py_files == 'true'
+        run: |
           echo "Downloading document_from_code.py"
           curl -o document_from_code.py  https://raw.githubusercontent.com/westerlymerlin/pyAutomate/master/document_from_code.py
           echo "Running Document From Code"
           python -m document_from_code
 
-      - name: If contains Terraform, tflint and run terraform documentation as code
+      - name: If terraform found run terraform documentation from code
         if: steps.doc_types.outputs.tf_files == 'true'
         uses: terraform-docs/gh-actions@v1.4.1
         with:
@@ -82,9 +82,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
-      - name: Create PR Release to main for checked in code
+      - name: Create PR Release from DocUcode to to main
         run: |
-          gh pr create --title "Auto PR from WesterlyMerlin Code Checks" --body "Static code analysis (pylint > 9/10) and DocUCode has completed"
+          gh pr create --title "Auto PR from WesterlyMerlin Code Checks" --body "Static code analysis and Documentation from code has completed"
         env:
           GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
