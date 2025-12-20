@@ -59,7 +59,7 @@ jobs:
         if: steps.doc_types.outputs.tf_files == 'true'
         run: |
           tflint --init
-          tflint -f compact
+          tflint --chdir terraform -f compact
         env:
           GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
