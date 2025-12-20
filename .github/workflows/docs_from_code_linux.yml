@@ -19,10 +19,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
       - name: Check for existence of Python and Terraform files
         id: doc_types
         run: |
-          echo "Checking for Python and Terraform files"
+          echo "Checking for Python and/or Terraform files"
           if [ "$(git ls-files '*.py')" == "" ]; then pyfiles=false; else pyfiles=true; fi
           if [ "$(git ls-files '*.tf')" == "" ]; then tffiles=false; else tffiles=true; fi
           echo "py_files=$pyfiles" >> $GITHUB_OUTPUT
@@ -46,6 +47,21 @@ jobs:
           uv pip install --system -r requirements.txt
           echo "Running pylint"
           pylint $(git ls-files '*.py') 
+
+      - name: If terraform found, setup terraform lint
+        if: steps.doc_types.outputs.tf_files == 'true'
+        uses: terraform-linters/setup-tflint@v6
+        with:
+            tflint_version: "latest"
+            cache: true
+
+      - name: If terraform found, initialise and run terraform lint
+        if: steps.doc_types.outputs.tf_files == 'true'
+        run: |
+          tflint --init
+          tflint -f compact
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACTION_SECRET }}
 
       - name: If python found, run python documentation from code
         if: steps.doc_types.outputs.py_files == 'true'
