@@ -1,6 +1,7 @@
 # pyAutomate
 ## Overview
-pyAutomate is a collection of automation scripts designed to streamline workflows for Westerleymerlin repositories. These scripts help automate repetitive tasks, improving efficiency and reducing manual effort.
+pyAutomate is a collection of automation scripts designed to streamline workflows for Westerlymerlin repositories. 
+These scripts help automate repetitive tasks, improving efficiency and reducing manual effort.
 ## Features
 - Automated repository management
 - Task scheduling and execution
@@ -15,7 +16,7 @@ pyAutomate is a collection of automation scripts designed to streamline workflow
 &nbsp;   
 --------------
 
-#### Copyright (C) 2025 Gary Twinn
+#### Copyright (C) 2026 Gary Twinn
 
 This program is free software: you can redistribute it and/or modify  
 it under the terms of the GNU General Public License as published by  
